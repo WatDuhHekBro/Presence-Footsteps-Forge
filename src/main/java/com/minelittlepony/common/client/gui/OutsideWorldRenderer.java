@@ -3,9 +3,9 @@ package com.minelittlepony.common.client.gui;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
@@ -26,21 +26,21 @@ public class OutsideWorldRenderer {
      *
      * @return a pre-configured TileEntityRendererDispatcher
      */
-    public static TileEntityRendererDispatcher configure(@Nullable World world) {
-        TileEntityRendererDispatcher dispatcher = TileEntityRendererDispatcher.instance;
+    public static BlockEntityRenderDispatcher configure(@Nullable Level world) {
+        BlockEntityRenderDispatcher dispatcher = BlockEntityRenderDispatcher.instance;
         Minecraft mc = Minecraft.getInstance();
 
-        world = ObjectUtils.firstNonNull(dispatcher.world, world, mc.world);
+        world = ObjectUtils.firstNonNull(dispatcher.level, world, mc.level);
 
         dispatcher.prepare(world,
                 mc.getTextureManager(),
-                mc.getRenderManager().getFontRenderer(),
-                mc.gameRenderer.getActiveRenderInfo(),
-                mc.objectMouseOver);
+                mc.getEntityRenderDispatcher().getFont(),
+                mc.gameRenderer.getMainCamera(),
+                mc.hitResult);
 
-        mc.getRenderManager().cacheActiveRenderInfo(world,
-                mc.gameRenderer.getActiveRenderInfo(),
-                mc.pointedEntity);
+        mc.getEntityRenderDispatcher().prepare(world,
+                mc.gameRenderer.getMainCamera(),
+                mc.crosshairPickEntity);
 
         return dispatcher;
     }
@@ -54,6 +54,6 @@ public class OutsideWorldRenderer {
      */
     public static void renderStack(ItemStack stack, int x, int y) {
         configure(null);
-        Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(stack, x, y);
+        Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, x, y);
     }
 }

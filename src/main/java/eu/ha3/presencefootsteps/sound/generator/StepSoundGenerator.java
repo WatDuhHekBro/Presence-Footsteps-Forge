@@ -1,7 +1,7 @@
 package eu.ha3.presencefootsteps.sound.generator;
 
 import eu.ha3.presencefootsteps.sound.Isolator;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * Has the ability to generate footsteps based on a Player.

@@ -1,6 +1,6 @@
 package eu.ha3.presencefootsteps.util;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import java.util.Random;
 
@@ -18,6 +18,6 @@ public class MathUtil {
     }
 
     public static float scalex(float number, float min, float max) {
-        return MathHelper.clamp((number - min) / (max - min), 0, 1);
+        return Mth.clamp((number - min) / (max - min), 0, 1);
     }
 }

@@ -1,7 +1,7 @@
 package eu.ha3.presencefootsteps.sound.player;
 
 import eu.ha3.presencefootsteps.sound.Options;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.Random;
 

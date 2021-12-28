@@ -1,10 +1,10 @@
 package com.minelittlepony.common.client.gui.sprite;
 
 import com.minelittlepony.common.client.gui.OutsideWorldRenderer;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IItemProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 
 public class ItemStackSprite implements ISprite {
 
@@ -12,7 +12,7 @@ public class ItemStackSprite implements ISprite {
 
     private int tint = 0xFFFFFFFF;
 
-    public ItemStackSprite setStack(IItemProvider iitem) {
+    public ItemStackSprite setStack(ItemLike iitem) {
         return setStack(new ItemStack(iitem));
     }
 
@@ -23,12 +23,12 @@ public class ItemStackSprite implements ISprite {
     }
 
     public ItemStackSprite setTint(int tint) {
-        stack.getOrCreateChildTag("display").putInt("color", tint);
+        stack.getOrCreateTagElement("display").putInt("color", tint);
         return this;
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float partialTicks) {
         OutsideWorldRenderer.renderStack(stack, x + 2, y + 2);
         RenderSystem.disableDepthTest();
     }

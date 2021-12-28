@@ -6,7 +6,7 @@ import com.minelittlepony.common.client.gui.dimension.Padding;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 
 public interface IViewRoot extends IBounded {
     /**
@@ -39,5 +39,5 @@ public interface IViewRoot extends IBounded {
      */
     Padding getContentPadding();
 
-    List<IGuiEventListener> getChildElements();
+    List<GuiEventListener> getChildElements();
 }

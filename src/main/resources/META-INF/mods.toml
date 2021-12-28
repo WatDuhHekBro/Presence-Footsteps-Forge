@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[35,)" #mandatory
+loaderVersion="[39,)" #mandatory
 # A URL to refer people to when problems occur with this mod
 #issueTrackerURL="http://my.issue.tracker/" #optional
 
@@ -16,7 +16,7 @@ license="MIT"
 # The modid of the mod
 modId="presencefootsteps" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="r29-1.16.4" #mandatory
+version="r30-1.18.1" #mandatory
  # A display name for the mod
 displayName="Presence Footsteps" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -40,7 +40,7 @@ An overly complicated sound mod.
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[35.1.4,)" #mandatory
+    versionRange="[39,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -49,6 +49,6 @@ An overly complicated sound mod.
 [[dependencies.examplemod]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4,)"
+    versionRange="[1.18.1,1.19)"
     ordering="NONE"
     side="BOTH"

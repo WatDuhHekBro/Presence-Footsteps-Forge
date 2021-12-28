@@ -3,11 +3,11 @@ package com.minelittlepony.common.client.gui.element;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.util.Mth;
 import com.minelittlepony.common.client.gui.ITextContext;
 import com.minelittlepony.common.client.gui.ITooltipped;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
@@ -16,7 +16,7 @@ import com.minelittlepony.common.client.gui.style.IStyled;
 import com.minelittlepony.common.client.gui.style.Style;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 
 /**
  * A stylable button element.
@@ -42,7 +42,7 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
     }
 
     public Button(int x, int y, int width, int height) {
-        super(x, y, width, height, StringTextComponent.EMPTY);
+        super(x, y, width, height, TextComponent.EMPTY);
 
         bounds = new Bounds(y, x, width, height);
     }
@@ -102,7 +102,7 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
     }
 
     @Override
-    public void renderToolTip(MatrixStack matrices, Screen parent, int mouseX, int mouseY) {
+    public void renderToolTip(PoseStack matrices, Screen parent, int mouseX, int mouseY) {
         if (visible) {
             getStyle().getTooltip().ifPresent(tooltip -> {
                 // todo: tooltips
@@ -112,10 +112,10 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(PoseStack matrices, int mouseX, int mouseY, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
 
-        mc.getTextureManager().bindTexture(WIDGETS_LOCATION);
+        mc.getTextureManager().bind(WIDGETS_LOCATION);
 
         RenderSystem.color4f(1, 1, 1, alpha);
         RenderSystem.enableBlend();
@@ -144,10 +144,10 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
         }
 
         setMessage(getStyle().getText());
-        renderForground(matrices, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
+        renderForground(matrices, mc, mouseX, mouseY, foreColor | Mth.ceil(alpha * 255.0F) << 24);
     }
 
-    protected void renderForground(MatrixStack matrices, Minecraft mc, int mouseX, int mouseY, int foreColor) {
+    protected void renderForground(PoseStack matrices, Minecraft mc, int mouseX, int mouseY, int foreColor) {
         drawCenteredLabel(matrices, getMessage(), x + width / 2, y + (height - 8) / 2, foreColor, 0);
     }
 
@@ -156,7 +156,7 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
         action.accept(this);
     }
 
-    protected final void renderButtonBlit(MatrixStack matrices, int x, int y, int state, int blockWidth, int blockHeight) {
+    protected final void renderButtonBlit(PoseStack matrices, int x, int y, int state, int blockWidth, int blockHeight) {
 
         int endV = 200 - blockWidth/2;
         int endU = state + 20 - blockHeight/2;

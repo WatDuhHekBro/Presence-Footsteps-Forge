@@ -1,9 +1,9 @@
 package com.minelittlepony.common.client.gui.dimension;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.MainWindow;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.GuiComponent;
 
 /**
  * Represents the bounding rectangle of an element on the screen.
@@ -117,17 +117,17 @@ public class Bounds {
      * Draws a coloured rectangle over the area covered by this bounds.
      * Useful for debugging.
      */
-    public void draw(MatrixStack matrices, int tint) {
-        AbstractGui.fill(matrices, left, top, left + width, top + height, tint);
+    public void draw(PoseStack matrices, int tint) {
+        GuiComponent.fill(matrices, left, top, left + width, top + height, tint);
     }
 
-    public void debugMeasure(MatrixStack matrices) {
-        MainWindow window = Minecraft.getInstance().getMainWindow();
-        AbstractGui.fill(matrices, left, 0, left + 1, window.getScaledHeight(), 0xFFFFFFFF);
-        AbstractGui.fill(matrices, left + width, 0, left + width + 1, window.getScaledHeight(), 0xFFFFFFFF);
+    public void debugMeasure(PoseStack matrices) {
+        Window window = Minecraft.getInstance().getWindow();
+        GuiComponent.fill(matrices, left, 0, left + 1, window.getGuiScaledHeight(), 0xFFFFFFFF);
+        GuiComponent.fill(matrices, left + width, 0, left + width + 1, window.getGuiScaledHeight(), 0xFFFFFFFF);
 
-        AbstractGui.fill(matrices, 0, top, window.getScaledWidth(), top + 1, 0xFFFFFFFF);
-        AbstractGui.fill(matrices, 0, top + height, window.getScaledWidth(), top + height + 1, 0xFFFFFFFF);
+        GuiComponent.fill(matrices, 0, top, window.getGuiScaledWidth(), top + 1, 0xFFFFFFFF);
+        GuiComponent.fill(matrices, 0, top + height, window.getGuiScaledWidth(), top + height + 1, 0xFFFFFFFF);
     }
 
     protected boolean equals(Bounds o) {

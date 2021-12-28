@@ -1,7 +1,7 @@
 package eu.ha3.presencefootsteps.world;
 
-import net.minecraft.block.SoundType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class PrimitiveLookup implements Lookup<SoundType> {
     @Override
     public String getAssociation(SoundType sounds, String substrate) {
 
-        ResourceLocation id = sounds.getStepSound().getName();
+        ResourceLocation id = sounds.getStepSound().getLocation();
         Map<ResourceLocation, String> primitives = substrates.get(substrate);
 
         if (primitives == null) {
@@ -53,7 +53,7 @@ public class PrimitiveLookup implements Lookup<SoundType> {
 
     @Override
     public boolean contains(SoundType sounds) {
-        ResourceLocation primitive = sounds.getStepSound().getName();
+        ResourceLocation primitive = sounds.getStepSound().getLocation();
 
         for (Map<ResourceLocation, String> primitives : substrates.values()) {
             if (primitives.containsKey(primitive)) {

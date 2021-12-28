@@ -2,14 +2,14 @@ package com.minelittlepony.common.client.gui.style;
 
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import com.minelittlepony.common.client.gui.Tooltip;
 import com.minelittlepony.common.client.gui.sprite.ISprite;
 import com.minelittlepony.common.client.gui.sprite.ItemStackSprite;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Controls the visual appearance of any elements in Kirin
@@ -27,7 +27,7 @@ public class Style {
 
     private Optional<Tooltip> tooltip = Optional.empty();
 
-    private ITextComponent text = StringTextComponent.EMPTY;
+    private Component text = TextComponent.EMPTY;
     private int color = 0xFFFFFFFF;
 
     /**
@@ -60,20 +60,20 @@ public class Style {
      * Translations are done internally.
      */
     public Style setText(String text) {
-        return setText(new TranslationTextComponent(text));
+        return setText(new TranslatableComponent(text));
     }
 
     /**
      * Sets the text label to display. Accepts raw text, or a translation string.
      * Translations are done internally.
      */
-    public Style setText(ITextComponent text) {
+    public Style setText(Component text) {
         this.text = text;
 
         return this;
     }
 
-    public ITextComponent getText() {
+    public Component getText() {
         return text;
     }
 
@@ -82,7 +82,7 @@ public class Style {
      *
      * @param iitem An Item or Item supplier to render on this button
      */
-    public Style setIcon(IItemProvider iitem) {
+    public Style setIcon(ItemLike iitem) {
         return setIcon(new ItemStackSprite().setStack(iitem));
     }
 
@@ -131,7 +131,7 @@ public class Style {
      *
      * @param tooltip A tooltip translation string.
      */
-    public Style setTooltip(ITextComponent tooltip) {
+    public Style setTooltip(Component tooltip) {
         return setTooltip(Tooltip.of(tooltip));
     }
 
@@ -139,14 +139,14 @@ public class Style {
         return setTooltip(tooltip).setTooltipOffset(x, y);
     }
 
-    public Style setTooltip(ITextComponent tooltip, int x, int y) {
+    public Style setTooltip(Component tooltip, int x, int y) {
         return setTooltip(tooltip).setTooltipOffset(x, y);
     }
 
     /**
      * Sets the tooltip text with a multi-line value.
      */
-    public Style setTooltip(List<ITextComponent> tooltip) {
+    public Style setTooltip(List<Component> tooltip) {
         return setTooltip(Tooltip.of(tooltip));
     }
 

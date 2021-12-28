@@ -3,15 +3,18 @@ package com.minelittlepony.common.client.gui.element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 import com.minelittlepony.common.client.gui.IField;
 
 import java.util.function.Function;
 
 import static net.minecraft.client.gui.widget.Widget.WIDGETS_LOCATION;
+
+import com.minelittlepony.common.client.gui.IField.IChangeCallback;
+import com.net.minecraft.client.gui.components.AbstractWidgetd.IChangeCallback;
 
 /**
  * Base class for a slider element.
@@ -74,7 +77,7 @@ public abstract class AbstractSlider<T> extends Button implements IField<T, Abst
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (active && visible && (keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT)) {
-            playDownSound(Minecraft.getInstance().getSoundHandler());
+            playDownSound(Minecraft.getInstance().getSoundManager());
 
             float step = (max - min) / 4F;
 
@@ -91,7 +94,7 @@ public abstract class AbstractSlider<T> extends Button implements IField<T, Abst
     }
 
     protected void setClampedValue(float value) {
-        value = MathHelper.clamp(value, 0, 1);
+        value = Mth.clamp(value, 0, 1);
 
         if (value != this.value) {
             float initial = this.value;
@@ -128,8 +131,8 @@ public abstract class AbstractSlider<T> extends Button implements IField<T, Abst
     }
 
     @Override
-    protected void renderBg(MatrixStack matrices, Minecraft mc, int mouseX, int mouseY) {
-        mc.getTextureManager().bindTexture(WIDGETS_LOCATION);
+    protected void renderBg(PoseStack matrices, Minecraft mc, int mouseX, int mouseY) {
+        mc.getTextureManager().bind(WIDGETS_LOCATION);
 
         int i = 46 + (isHovered() ? 2 : 1) * 20;
         int sliderX = x + (int)(value * (width - 8));
@@ -144,10 +147,10 @@ public abstract class AbstractSlider<T> extends Button implements IField<T, Abst
     }
 
     static float convertFromRange(float value, float min, float max) {
-        return (MathHelper.clamp(value, min, max) - min) / (max - min);
+        return (Mth.clamp(value, min, max) - min) / (max - min);
     }
 
     static float convertToRange(float value, float min, float max) {
-        return MathHelper.clamp(min + (value * (max - min)), min, max);
+        return Mth.clamp(min + (value * (max - min)), min, max);
     }
 }

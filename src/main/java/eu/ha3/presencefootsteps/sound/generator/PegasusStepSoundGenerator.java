@@ -3,7 +3,7 @@ package eu.ha3.presencefootsteps.sound.generator;
 import eu.ha3.presencefootsteps.sound.Options;
 import eu.ha3.presencefootsteps.sound.State;
 import eu.ha3.presencefootsteps.util.MathUtil;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 class PegasusStepSoundGenerator extends QuadrapedalStepSoundGenerator {
 
@@ -109,13 +109,13 @@ class PegasusStepSoundGenerator extends QuadrapedalStepSoundGenerator {
     protected void simulateFlying(LivingEntity ply) {
         final long now = System.currentTimeMillis();
 
-        if (updateState(motionX, motionY, motionZ, ply.moveStrafing)) {
+        if (updateState(motionX, motionY, motionZ, ply.xxa)) {
             nextFlapTime = now + variator.FLIGHT_TRANSITION_TIME;
         }
 
-        if (!ply.canSwim() && !isFalling && now > nextFlapTime) {
-            nextFlapTime = now + getWingSpeed() + (ply.world.rand.nextInt(100) - 50);
-            flapMod = (flapMod + 1) % (1 + ply.world.rand.nextInt(4));
+        if (!ply.isUnderWater() && !isFalling && now > nextFlapTime) {
+            nextFlapTime = now + getWingSpeed() + (ply.level.random.nextInt(100) - 50);
+            flapMod = (flapMod + 1) % (1 + ply.level.random.nextInt(4));
 
             float volume = 1;
             long diffImmobile = now - lastTimeImmobile;

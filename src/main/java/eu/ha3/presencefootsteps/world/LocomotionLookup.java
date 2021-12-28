@@ -2,11 +2,11 @@ package eu.ha3.presencefootsteps.world;
 
 import eu.ha3.presencefootsteps.PresenceFootsteps;
 import eu.ha3.presencefootsteps.sound.generator.Locomotion;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,8 +17,8 @@ public class LocomotionLookup implements Index<Entity, Locomotion> {
 
     @Override
     public Locomotion lookup(Entity key) {
-        if (key instanceof PlayerEntity) {
-            return Locomotion.forPlayer((PlayerEntity)key, Locomotion.NONE);
+        if (key instanceof Player) {
+            return Locomotion.forPlayer((Player)key, Locomotion.NONE);
         }
         return Locomotion.forLiving(key, values.getOrDefault(EntityType.getKey(key.getType()), Locomotion.BIPED));
     }

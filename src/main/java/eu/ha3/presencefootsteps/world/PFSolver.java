@@ -3,20 +3,20 @@ package eu.ha3.presencefootsteps.world;
 import eu.ha3.presencefootsteps.sound.Isolator;
 import eu.ha3.presencefootsteps.sound.Options;
 import eu.ha3.presencefootsteps.sound.State;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.client.player.RemotePlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.World;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,37 +53,37 @@ public class PFSolver implements Solver {
     @Override
     public Association findAssociation(Entity ply, double verticalOffsetAsMinus, boolean isRightFoot) {
 
-        double rot = Math.toRadians(MathHelper.wrapDegrees(ply.rotationYaw));
+        double rot = Math.toRadians(Mth.wrapDegrees(ply.yRot));
 
-        Vector3d pos = ply.getPositionVec();
+        Vec3 pos = ply.position();
 
         float feetDistanceToCenter = 0.2f * (isRightFoot ? -1 : 1);
 
         return findAssociation(ply, new BlockPos(
             pos.x + Math.cos(rot) * feetDistanceToCenter,
-            ply.getBoundingBox().getMin(Axis.Y) - TRAP_DOOR_OFFSET - verticalOffsetAsMinus,
+            ply.getBoundingBox().min(Axis.Y) - TRAP_DOOR_OFFSET - verticalOffsetAsMinus,
             pos.z + Math.sin(rot) * feetDistanceToCenter
         ));
     }
 
     private Association findAssociation(Entity player, BlockPos pos) {
 
-        if (!(player instanceof RemoteClientPlayerEntity)) {
-            Vector3d vel = player.getMotion();
+        if (!(player instanceof RemotePlayer)) {
+            Vec3 vel = player.getDeltaMovement();
 
             if ((vel.x != 0 || vel.y != 0 || vel.z != 0) && Math.abs(vel.y) < 0.02) {
                 return Association.NOT_EMITTER; // Don't play sounds on every tiny bounce
             }
         }
 
-        AxisAlignedBB collider = player.getBoundingBox();
+        AABB collider = player.getBoundingBox();
         // normalize to the bottom of the block
         // so we can detect carpets on top of fences
-        collider = collider.offset(0, -(collider.minY - Math.floor(collider.minY)), 0);
+        collider = collider.move(0, -(collider.minY - Math.floor(collider.minY)), 0);
         // add buffer
-        collider = collider.grow(0.1);
+        collider = collider.inflate(0.1);
 
-        Association worked = findAssociation(player.world, pos, collider);
+        Association worked = findAssociation(player.level, pos, collider);
 
         // If it didn't work, the player has walked over the air on the border of a block.
         // ------ ------ --> z
@@ -97,8 +97,8 @@ public class PFSolver implements Solver {
         }
 
         // Create a trigo. mark contained inside the block the player is over
-        double xdang = (player.getPosX() - pos.getX()) * 2 - 1;
-        double zdang = (player.getPosZ() - pos.getZ()) * 2 - 1;
+        double xdang = (player.getX() - pos.getX()) * 2 - 1;
+        double zdang = (player.getZ() - pos.getZ()) * 2 - 1;
         // -1 0 1
         // ------- -1
         // | o |
@@ -123,9 +123,9 @@ public class PFSolver implements Solver {
         // < maxofX- maxofX+ >
         // Take the maximum border to produce the sound
         if (isXdangMax) { // If we are in the positive border, add 1, else subtract 1
-            worked = findAssociation(player.world, pos.east(xdang > 0 ? 1 : -1), collider);
+            worked = findAssociation(player.level, pos.east(xdang > 0 ? 1 : -1), collider);
         } else {
-            worked = findAssociation(player.world, pos.south(zdang > 0 ? 1 : -1), collider);
+            worked = findAssociation(player.level, pos.south(zdang > 0 ? 1 : -1), collider);
         }
 
         // If that didn't work, then maybe the footstep hit in the
@@ -137,14 +137,14 @@ public class PFSolver implements Solver {
 
         // Take the maximum direction and try with the orthogonal direction of it
         if (isXdangMax) {
-            return findAssociation(player.world, pos.north(zdang > 0 ? 1 : -1), collider);
+            return findAssociation(player.level, pos.north(zdang > 0 ? 1 : -1), collider);
         }
 
-        return findAssociation(player.world, pos.east(xdang > 0 ? 1 : -1), collider);
+        return findAssociation(player.level, pos.east(xdang > 0 ? 1 : -1), collider);
     }
 
-    private String findForGolem(World world, BlockPos pos, String substrate) {
-        List<Entity> golems = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos), e -> !(e instanceof PlayerEntity));
+    private String findForGolem(Level world, BlockPos pos, String substrate) {
+        List<Entity> golems = world.getEntitiesOfClass(Entity.class, new AABB(pos), e -> !(e instanceof Player));
 
         if (!golems.isEmpty()) {
             String golem = isolator.getGolemMap().getAssociation(golems.get(0).getType(), substrate);
@@ -159,10 +159,10 @@ public class PFSolver implements Solver {
         return Emitter.UNASSIGNED;
     }
 
-    private Association findAssociation(World world, BlockPos pos, AxisAlignedBB collider) {
+    private Association findAssociation(Level world, BlockPos pos, AABB collider) {
         BlockState in = world.getBlockState(pos);
 
-        BlockPos up = pos.up();
+        BlockPos up = pos.above();
         BlockState above = world.getBlockState(up);
         // Try to see if the block above is a carpet...
 
@@ -181,8 +181,8 @@ public class PFSolver implements Solver {
             // CONTINUE with the actual block surface the player is walking on
             Material mat = in.getMaterial();
 
-            if (mat == Material.AIR || mat == Material.MISCELLANEOUS) {
-                BlockPos down = pos.down();
+            if (mat == Material.AIR || mat == Material.DECORATION) {
+                BlockPos down = pos.below();
                 BlockState below = world.getBlockState(down);
 
                 association = isolator.getBlockMap().getAssociation(below, Lookup.FENCE_SUBSTRATE);
@@ -198,7 +198,7 @@ public class PFSolver implements Solver {
             if (shape.isEmpty()) {
                 shape = in.getShape(world, pos);
             }
-            if (!shape.isEmpty() && !shape.getBoundingBox().offset(pos).intersects(collider)) {
+            if (!shape.isEmpty() && !shape.bounds().move(pos).intersects(collider)) {
                 return Association.NOT_EMITTER;
             }
 
@@ -224,8 +224,8 @@ public class PFSolver implements Solver {
 
         if (Emitter.isEmitter(association) && (
                 world.isRainingAt(up)
-                || in.getFluidState().isTagged(FluidTags.WATER)
-                || above.getFluidState().isTagged(FluidTags.WATER))) {
+                || in.getFluidState().is(FluidTags.WATER)
+                || above.getFluidState().is(FluidTags.WATER))) {
             // Only if the block is open to the sky during rain
             // or the block is submerged
             // or the block is waterlogged
@@ -270,9 +270,9 @@ public class PFSolver implements Solver {
             return false;
         }
 
-        float volume = Math.min(1, (float) ply.getMotion().length() * 0.35F);
+        float volume = Math.min(1, (float) ply.getDeltaMovement().length() * 0.35F);
         Options options = Options.singular("gliding_volume", volume);
-        State state = ply.canSwim() ? State.SWIM : State.WALK;
+        State state = ply.isUnderWater() ? State.SWIM : State.WALK;
 
         isolator.getAcoustics().playAcoustic(ply, "_SWIM", state, options);
 
@@ -281,16 +281,16 @@ public class PFSolver implements Solver {
 
     @Override
     public boolean hasStoppingConditions(Entity ply) {
-        return ply.canSwim();
+        return ply.isUnderWater();
     }
 
     @Override
-    public Association findAssociation(World world, BlockPos pos, String strategy) {
+    public Association findAssociation(Level world, BlockPos pos, String strategy) {
         if (!MESSY_FOLIAGE_STRATEGY.equals(strategy)) {
             return Association.NOT_EMITTER;
         }
 
-        BlockState above = world.getBlockState(pos.up());
+        BlockState above = world.getBlockState(pos.above());
 
         String foliage = isolator.getBlockMap().getAssociation(above, Lookup.FOLIAGE_SUBSTRATE);
 

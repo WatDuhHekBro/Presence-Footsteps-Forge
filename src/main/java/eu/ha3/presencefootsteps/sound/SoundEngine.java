@@ -7,19 +7,19 @@ import eu.ha3.presencefootsteps.sound.acoustics.AcousticsJsonParser;
 import eu.ha3.presencefootsteps.sound.generator.Locomotion;
 import eu.ha3.presencefootsteps.sound.generator.StepSoundGenerator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.FlyingEntity;
-import net.minecraft.entity.passive.WaterMobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.resources.IFutureReloadListener;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.profiler.IProfiler;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.FlyingMob;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,9 +29,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-import net.minecraft.resources.IFutureReloadListener.IStage;
+import net.minecraft.server.packs.resources.PreparableReloadListener.PreparationBarrier;
 
-public class SoundEngine implements IFutureReloadListener {
+public class SoundEngine implements PreparableReloadListener {
 
     private static final ResourceLocation blockmap = new ResourceLocation("presencefootsteps", "config/blockmap.json");
     private static final ResourceLocation golemmap = new ResourceLocation("presencefootsteps", "config/golemmap.json");
@@ -67,25 +67,25 @@ public class SoundEngine implements IFutureReloadListener {
     }
 
     public boolean isRunning(Minecraft client) {
-        return config.getEnabled() && (client.isIntegratedServerRunning() || config.getEnabledMP());
+        return config.getEnabled() && (client.isLocalServer() || config.getEnabledMP());
     }
 
-    private List<? extends Entity> getTargets(PlayerEntity ply) {
+    private List<? extends Entity> getTargets(Player ply) {
         if (config.getEnabledGlobal()) {
-            AxisAlignedBB box = new AxisAlignedBB(ply.getPosition()).grow(16);
+            AABB box = new AABB(ply.blockPosition()).inflate(16);
 
-            return ply.world.getEntitiesInAABBexcluding((Entity)null, box, e ->
+            return ply.level.getEntities((Entity)null, box, e ->
                         e instanceof LivingEntity
-                    && !(e instanceof WaterMobEntity)
-                    && !(e instanceof FlyingEntity)
+                    && !(e instanceof WaterAnimal)
+                    && !(e instanceof FlyingMob)
                     && !e.isPassenger());
         } else {
-            return ply.world.getPlayers();
+            return ply.level.players();
         }
     }
 
-    public void onFrame(Minecraft client, PlayerEntity player) {
-        if (!client.isGamePaused() && isRunning(client)) {
+    public void onFrame(Minecraft client, Player player) {
+        if (!client.isPaused() && isRunning(client)) {
             getTargets(player).forEach(e -> {
                 StepSoundGenerator generator = ((StepSoundSource) e).getStepGenerator(this);
                 generator.setIsolator(isolator);
@@ -98,20 +98,20 @@ public class SoundEngine implements IFutureReloadListener {
         }
     }
 
-    public boolean onSoundRecieved(SoundEvent event, SoundCategory category) {
+    public boolean onSoundRecieved(SoundEvent event, SoundSource category) {
 
-        if (category != SoundCategory.PLAYERS || !isRunning(Minecraft.getInstance())) {
+        if (category != SoundSource.PLAYERS || !isRunning(Minecraft.getInstance())) {
             return false;
         }
 
-        if (event == SoundEvents.ENTITY_PLAYER_SWIM
-         || event == SoundEvents.ENTITY_PLAYER_SPLASH
-         || event == SoundEvents.ENTITY_PLAYER_BIG_FALL
-         || event == SoundEvents.ENTITY_PLAYER_SMALL_FALL) {
+        if (event == SoundEvents.PLAYER_SWIM
+         || event == SoundEvents.PLAYER_SPLASH
+         || event == SoundEvents.PLAYER_BIG_FALL
+         || event == SoundEvents.PLAYER_SMALL_FALL) {
             return true;
         }
 
-        String[] name = event.getName().getPath().split("\\.");
+        String[] name = event.getLocation().getPath().split("\\.");
 
         return name.length > 0
                 && "block".contentEquals(name[0])
@@ -119,28 +119,28 @@ public class SoundEngine implements IFutureReloadListener {
     }
 
     public Locomotion getLocomotion(LivingEntity entity) {
-        if (entity instanceof PlayerEntity) {
-            return Locomotion.forPlayer((PlayerEntity)entity, config.getLocomotion());
+        if (entity instanceof Player) {
+            return Locomotion.forPlayer((Player)entity, config.getLocomotion());
         }
         return isolator.getLocomotionMap().lookup(entity);
     }
 
     @Override
-    public CompletableFuture<Void> reload(IStage sync, IResourceManager sender,
-            IProfiler serverProfiler, IProfiler clientProfiler,
+    public CompletableFuture<Void> reload(PreparationBarrier sync, ResourceManager sender,
+            ProfilerFiller serverProfiler, ProfilerFiller clientProfiler,
             Executor serverExecutor, Executor clientExecutor) {
 
         sync.getClass();
-        return sync.markCompleteAwaitingOthers(null).thenRunAsync(() -> {
+        return sync.wait(null).thenRunAsync(() -> {
             clientProfiler.startTick();
-            clientProfiler.startSection("Reloading PF Sounds");
+            clientProfiler.push("Reloading PF Sounds");
             reloadEverything(sender);
-            clientProfiler.endSection();
+            clientProfiler.pop();
             clientProfiler.endTick();
         }, clientExecutor);
     }
 
-    public void reloadEverything(IResourceManager manager) {
+    public void reloadEverything(ResourceManager manager) {
         isolator = new PFIsolator(this);
 
         collectResources(blockmap, manager, isolator.getBlockMap()::load);
@@ -151,13 +151,13 @@ public class SoundEngine implements IFutureReloadListener {
         collectResources(variator, manager, isolator.getVariator()::load);
     }
 
-    private void collectResources(ResourceLocation id, IResourceManager manager, Consumer<Reader> consumer) {
+    private void collectResources(ResourceLocation id, ResourceManager manager, Consumer<Reader> consumer) {
         try {
-            manager.getAllResources(id).forEach(res -> {
+            manager.getResources(id).forEach(res -> {
                 try (Reader stream = new InputStreamReader(res.getInputStream())) {
                     consumer.accept(stream);
                 } catch (Exception e) {
-                    PresenceFootsteps.logger.error("Error encountered loading resource " + res.getLocation() + " from pack" + res.getPackName(), e);
+                    PresenceFootsteps.logger.error("Error encountered loading resource " + res.getLocation() + " from pack" + res.getSourceName(), e);
                 }
             });
         } catch (IOException e) {
@@ -168,7 +168,7 @@ public class SoundEngine implements IFutureReloadListener {
     public void shutdown() {
         isolator = new PFIsolator(this);
 
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
 
         if (player != null) {
             ((IEntity) player).setNextStepDistance(0);

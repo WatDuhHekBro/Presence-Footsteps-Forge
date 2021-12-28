@@ -2,7 +2,7 @@ package eu.ha3.presencefootsteps;
 
 import eu.ha3.presencefootsteps.config.JsonFile;
 import eu.ha3.presencefootsteps.sound.generator.Locomotion;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import java.nio.file.Path;
 
@@ -67,7 +67,7 @@ public class PFConfig extends JsonFile {
     }
 
     public int getVolume() {
-        return MathHelper.clamp(volume, 0, 100);
+        return Mth.clamp(volume, 0, 100);
     }
 
     public float setVolume(float volume) {

@@ -1,9 +1,9 @@
 package eu.ha3.presencefootsteps.sound.generator;
 
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,11 +39,11 @@ public enum Locomotion {
     }
 
     public String getOptionName() {
-        return I18n.format("menu.pf.stance", I18n.format(this == NONE ? AUTO_TRANSLATION_KEY : translationKey));
+        return I18n.get("menu.pf.stance", I18n.get(this == NONE ? AUTO_TRANSLATION_KEY : translationKey));
     }
 
     public String getDisplayName() {
-        return I18n.format("pf.stance", I18n.format(translationKey));
+        return I18n.get("pf.stance", I18n.get(translationKey));
     }
 
     public static Locomotion byName(String name) {
@@ -58,7 +58,7 @@ public enum Locomotion {
         return fallback;
     }
 
-    public static Locomotion forPlayer(PlayerEntity ply, Locomotion preference) {
+    public static Locomotion forPlayer(Player ply, Locomotion preference) {
         if (preference == NONE) {
             /*if (ply instanceof ClientPlayerEntity && MineLP.hasPonies()) {
                 return MineLP.getLocomotion(ply);

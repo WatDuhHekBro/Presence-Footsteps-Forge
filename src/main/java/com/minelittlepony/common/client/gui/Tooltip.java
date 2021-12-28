@@ -6,15 +6,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import com.google.common.base.Splitter;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public interface Tooltip {
     Splitter LINE_SPLITTER = Splitter.onPattern("\r?\n|\\\\n");
 
-    List<ITextComponent> getLines();
+    List<Component> getLines();
 
     default CharSequence getString() {
         StringBuilder builder = new StringBuilder();
@@ -22,39 +22,39 @@ public interface Tooltip {
             if (builder.length() > 0) {
                 builder.append('\n');
             }
-            builder.append(line.getUnformattedComponentText());
+            builder.append(line.getContents());
         });
         return builder;
     }
 
-    default Stream<ITextComponent> stream() {
+    default Stream<Component> stream() {
         return getLines().stream();
     }
 
     static Tooltip of(String text) {
-        return of(new TranslationTextComponent(text));
+        return of(new TranslatableComponent(text));
     }
 
-    static Tooltip of(List<ITextComponent> lines) {
-        List<ITextComponent> flines = lines.stream()
+    static Tooltip of(List<Component> lines) {
+        List<Component> flines = lines.stream()
                 .map(Tooltip::of)
                 .flatMap(Tooltip::stream)
                 .collect(Collectors.toList());
         return () -> flines;
     }
 
-    static Tooltip of(ITextComponent text) {
+    static Tooltip of(Component text) {
 
-        List<ITextComponent> lines = new ArrayList<>();
-        lines.add(new StringTextComponent(""));
+        List<Component> lines = new ArrayList<>();
+        lines.add(new TextComponent(""));
 
-        text.getComponentWithStyle((style, part) -> {
-            List<ITextComponent> parts = LINE_SPLITTER.splitToList(part)
+        text.visit((style, part) -> {
+            List<Component> parts = LINE_SPLITTER.splitToList(part)
                     .stream()
-                    .map(i -> new StringTextComponent(i).mergeStyle(style))
+                    .map(i -> new TextComponent(i).withStyle(style))
                     .collect(Collectors.toList());
 
-            lines.add(((IFormattableTextComponent)lines.remove(lines.size() - 1)).append(parts.remove(0)));
+            lines.add(((MutableComponent)lines.remove(lines.size() - 1)).append(parts.remove(0)));
             lines.addAll(parts);
 
             return Optional.empty();

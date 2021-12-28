@@ -2,24 +2,24 @@ package com.minelittlepony.common.client.gui;
 
 import java.util.List;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.util.FormattedCharSequence;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.math.Matrix4f;
 
 /**
  * Renders a stylised tooltip with borders and backgrounds.
  *
  * @author     Sollace
  */
-public class ToolTipRenderer extends AbstractGui {
+public class ToolTipRenderer extends GuiComponent {
 
     private final Screen screen;
 
@@ -68,12 +68,12 @@ public class ToolTipRenderer extends AbstractGui {
      * @param x The left X position (in pixels) of the tooltip
      * @param y The top Y position (in pixels) of the tooltip
      */
-    public void render(MatrixStack matrices, List<? extends IReorderingProcessor> text, int x, int y) {
+    public void render(PoseStack matrices, List<? extends FormattedCharSequence> text, int x, int y) {
         if (text.isEmpty()) {
             return;
         }
 
-        FontRenderer font = Minecraft.getInstance().fontRenderer;
+        Font font = Minecraft.getInstance().font;
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
         RenderSystem.disableRescaleNormal();
@@ -81,8 +81,8 @@ public class ToolTipRenderer extends AbstractGui {
 
         int labelWidth = 0;
 
-        for (IReorderingProcessor string : text) {
-            labelWidth = Math.max(labelWidth, font.func_243245_a(string));
+        for (FormattedCharSequence string : text) {
+            labelWidth = Math.max(labelWidth, font.width(string));
         }
 
         int left = x + 12;
@@ -102,7 +102,7 @@ public class ToolTipRenderer extends AbstractGui {
         }
 
         setBlitOffset(300);
-        itemRenderer.zLevel = 300;
+        itemRenderer.blitOffset = 300;
 
         int labelFill = getFill();
         fillGradient(matrices, left - 3,              top - 4,               left + labelWidth + 3, top - 3,               labelFill, labelFill);
@@ -118,18 +118,18 @@ public class ToolTipRenderer extends AbstractGui {
         fillGradient(matrices, left - 3,              top - 3,               left + labelWidth + 3, top - 3 + 1,               borderGradientTop, borderGradientTop);
         fillGradient(matrices, left - 3,              top + labelHeight + 2, left + labelWidth + 3, top + labelHeight + 3,     borderGradientBot, borderGradientBot);
 
-        MatrixStack stack = new MatrixStack();
-        IRenderTypeBuffer.Impl immediate = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+        PoseStack stack = new PoseStack();
+        MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
-        stack.translate(0, 0, itemRenderer.zLevel);
-        Matrix4f matrix = stack.getLast().getMatrix();
+        stack.translate(0, 0, itemRenderer.blitOffset);
+        Matrix4f matrix = stack.last().pose();
 
         int color = getTextColor();
 
         for(int r = 0; r < text.size(); ++r) {
-            IReorderingProcessor line = text.get(r);
+            FormattedCharSequence line = text.get(r);
             if (line != null) {
-                font.func_238416_a_(line, left, top, -1, true, matrix, immediate, true, 0, color);
+                font.drawInBatch(line, left, top, -1, true, matrix, immediate, true, 0, color);
             }
 
             if (r == 0) {
@@ -139,10 +139,10 @@ public class ToolTipRenderer extends AbstractGui {
             top += 10;
         }
 
-        immediate.finish();
+        immediate.endBatch();
 
         setBlitOffset(0);
-        itemRenderer.zLevel = 0;
+        itemRenderer.blitOffset = 0;
         RenderSystem.enableDepthTest();
         RenderSystem.enableRescaleNormal();
     }

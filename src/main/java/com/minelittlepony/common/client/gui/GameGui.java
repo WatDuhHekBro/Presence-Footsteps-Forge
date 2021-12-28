@@ -5,18 +5,18 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.AbstractWidget;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.dimension.Padding;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Optional root element for a screen using Kirin functionality.
@@ -48,8 +48,8 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      *
      * @param title The screen's title
      */
-    protected GameGui(ITextComponent title) {
-        this(title, Minecraft.getInstance().currentScreen);
+    protected GameGui(Component title) {
+        this(title, Minecraft.getInstance().screen);
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      * @param title The screen's title.
      * @param parent The parent screen.
      */
-    protected GameGui(ITextComponent title, @Nullable Screen parent) {
+    protected GameGui(Component title, @Nullable Screen parent) {
         super(title);
 
         this.parent = parent;
@@ -70,7 +70,7 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      * @param event The sound event to play.
      */
     public static void playSound(SoundEvent event) {
-        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(event, 1));
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(event, 1));
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      * @return True if the key is pressed.
      */
     public static boolean isKeyDown(int key) {
-        return InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), key);
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key);
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
     /**
      * The list of buttons present on this screen.
      */
-    public List<Widget> buttons() {
+    public List<AbstractWidget> buttons() {
         return buttons;
     }
 
@@ -104,7 +104,7 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      * The list of all child elements, buttons included, present on this screen.
      */
     @Override
-    public List<IGuiEventListener> getEventListeners() {
+    public List<GuiEventListener> children() {
         return children;
     }
 
@@ -114,7 +114,7 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      * Made public to help with mod development.
      */
     @Override
-    public <T extends Widget> T addButton(T button) {
+    public <T extends AbstractWidget> T addButton(T button) {
         return super.addButton(button);
     }
 
@@ -126,7 +126,7 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
 
         buttons.forEach(button -> {
@@ -142,8 +142,8 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      * Implementors should explicitly call this method when they want this behavior.
      */
     public void finish() {
-        onClose();
-        minecraft.displayGuiScreen(parent);
+        removed();
+        minecraft.setScreen(parent);
     }
 
     @Override
@@ -162,12 +162,12 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
     }
 
     @Override
-    public List<IGuiEventListener> getChildElements() {
-        return getEventListeners();
+    public List<GuiEventListener> getChildElements() {
+        return children();
     }
 
     @Override
-    public void renderTooltip(MatrixStack matrices, List<? extends IReorderingProcessor> text, int x, int y) {
+    public void renderTooltip(PoseStack matrices, List<? extends FormattedCharSequence> text, int x, int y) {
         tooltip.render(matrices, text, x, y);
     }
 }

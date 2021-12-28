@@ -4,7 +4,7 @@ import eu.ha3.presencefootsteps.sound.SoundEngine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.toasts.SystemToast;
 import net.minecraft.client.gui.toasts.ToastGui;
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -29,7 +29,7 @@ public class PresenceFootsteps {
 
     public static PFDebugHud debugHud;
 
-    public static KeyBinding keyBinding;
+    public static KeyMapping keyBinding;
 
     public PFDebugHud getDebugHud() {
         return debugHud;

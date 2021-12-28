@@ -1,11 +1,11 @@
 package eu.ha3.presencefootsteps.world;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nullable;
 
@@ -22,7 +22,7 @@ public class Association {
     private Entity source;
 
     public Association() {
-        this(Blocks.AIR.getDefaultState(), BlockPos.ZERO);
+        this(Blocks.AIR.defaultBlockState(), BlockPos.ZERO);
     }
 
     public Association(BlockState state, BlockPos pos) {

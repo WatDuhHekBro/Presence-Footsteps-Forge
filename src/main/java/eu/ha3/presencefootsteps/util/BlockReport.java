@@ -6,20 +6,42 @@ import eu.ha3.presencefootsteps.PresenceFootsteps;
 import eu.ha3.presencefootsteps.world.Lookup;
 import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Predicate;
+
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.BasePressurePlateBlock;
+import net.minecraft.world.level.block.BaseRailBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.InfestedBlock;
+import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.PipeBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.SnowyDirtBlock;
+import net.minecraft.world.level.block.SpreadingSnowyDirtBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TorchBlock;
+import net.minecraft.world.level.block.WoolCarpetBlock;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockReport {
     private final Path loc;
@@ -33,7 +55,7 @@ public class BlockReport {
             writeReport(filter);
             printResults();
         } catch (Exception e) {
-            addMessage(new TranslationTextComponent("pf.report.error", e.getMessage()).modifyStyle(s -> s.setFormatting(TextFormatting.RED)));
+            addMessage(new TranslatableComponent("pf.report.error", e.getMessage()).withStyle(s -> s.withColor(ChatFormatting.RED)));
         }
     }
 
@@ -46,7 +68,7 @@ public class BlockReport {
             writer.name("blocks");
             writer.beginObject();
             Registry.BLOCK.forEach(block -> {
-                BlockState state = block.getDefaultState();
+                BlockState state = block.defaultBlockState();
 
                 try {
                     if (filter == null || filter.test(state)) {
@@ -68,7 +90,7 @@ public class BlockReport {
             writer.name("unmapped_entities");
             writer.beginArray();
             Registry.ENTITY_TYPE.forEach(type -> {
-                if (type.create(Minecraft.getInstance().world) instanceof LivingEntity) {
+                if (type.create(Minecraft.getInstance().level) instanceof LivingEntity) {
                     ResourceLocation id = Registry.ENTITY_TYPE.getKey(type);
                     if (!PresenceFootsteps.getInstance().getEngine().getIsolator().getLocomotionMap().contains(id)) {
                         try {
@@ -91,7 +113,7 @@ public class BlockReport {
         if (state.getSoundType().getStepSound() == null) {
             return "NO_SOUND";
         }
-        return state.getSoundType().getStepSound().getName().getPath();
+        return state.getSoundType().getStepSound().getLocation().getPath();
     }
 
     private String getClassData(BlockState state) {
@@ -99,40 +121,40 @@ public class BlockReport {
 
         String soundName = "";
 
-        if (block instanceof AbstractPressurePlateBlock) soundName += ",EXTENDS_PRESSURE_PLATE";
-        if (block instanceof AbstractRailBlock) soundName += ",EXTENDS_RAIL";
-        if (block instanceof ContainerBlock) soundName += ",EXTENDS_CONTAINER";
-        if (block instanceof FlowingFluidBlock) soundName += ",EXTENDS_LIQUID";
+        if (block instanceof BasePressurePlateBlock) soundName += ",EXTENDS_PRESSURE_PLATE";
+        if (block instanceof BaseRailBlock) soundName += ",EXTENDS_RAIL";
+        if (block instanceof BaseEntityBlock) soundName += ",EXTENDS_CONTAINER";
+        if (block instanceof LiquidBlock) soundName += ",EXTENDS_LIQUID";
         if (block instanceof BushBlock) soundName += ",EXTENDS_PLANT";
         if (block instanceof DoublePlantBlock) soundName += ",EXTENDS_DOUBLE_PLANT";
-        if (block instanceof SixWayBlock) soundName += ",EXTENDS_CONNECTED_PLANT";
+        if (block instanceof PipeBlock) soundName += ",EXTENDS_CONNECTED_PLANT";
         if (block instanceof LeavesBlock) soundName += ",EXTENDS_LEAVES";
         if (block instanceof SlabBlock) soundName += ",EXTENDS_SLAB";
-        if (block instanceof StairsBlock) soundName += ",EXTENDS_STAIRS";
+        if (block instanceof StairBlock) soundName += ",EXTENDS_STAIRS";
         if (block instanceof SnowyDirtBlock) soundName += ",EXTENDS_SNOWY";
-        if (block instanceof SpreadableSnowyDirtBlock) soundName += ",EXTENDS_SPREADABLE";
+        if (block instanceof SpreadingSnowyDirtBlock) soundName += ",EXTENDS_SPREADABLE";
         if (block instanceof FallingBlock) soundName += ",EXTENDS_PHYSICALLY_FALLING";
-        if (block instanceof PaneBlock) soundName += ",EXTENDS_PANE";
-        if (block instanceof HorizontalBlock) soundName += ",EXTENDS_PILLAR";
+        if (block instanceof IronBarsBlock) soundName += ",EXTENDS_PANE";
+        if (block instanceof HorizontalDirectionalBlock) soundName += ",EXTENDS_PILLAR";
         if (block instanceof TorchBlock) soundName += ",EXTENDS_TORCH";
-        if (block instanceof CarpetBlock) soundName += ",EXTENDS_CARPET";
-        if (block instanceof SilverfishBlock) soundName += ",EXTENDS_INFESTED";
-        if (block instanceof BreakableBlock) soundName += ",EXTENDS_TRANSPARENT";
+        if (block instanceof WoolCarpetBlock) soundName += ",EXTENDS_CARPET";
+        if (block instanceof InfestedBlock) soundName += ",EXTENDS_INFESTED";
+        if (block instanceof HalfTransparentBlock) soundName += ",EXTENDS_TRANSPARENT";
 
         return soundName;
     }
 
     private void printResults() {
-        addMessage(new TranslationTextComponent("pf.report.save")
-                .append(new StringTextComponent(loc.getFileName().toString()).modifyStyle(s -> s
-                    .setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, loc.toString()))
-                    .applyFormatting(TextFormatting.UNDERLINE)))
-                .modifyStyle(s -> s
-                    .setFormatting(TextFormatting.GREEN)));
+        addMessage(new TranslatableComponent("pf.report.save")
+                .append(new TextComponent(loc.getFileName().toString()).withStyle(s -> s
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, loc.toString()))
+                    .applyFormat(ChatFormatting.UNDERLINE)))
+                .withStyle(s -> s
+                    .withColor(ChatFormatting.GREEN)));
     }
 
-    public static void addMessage(ITextComponent text) {
-        Minecraft.getInstance().ingameGUI.getChatGUI().printChatMessage(text);
+    public static void addMessage(Component text) {
+        Minecraft.getInstance().gui.getChat().addMessage(text);
     }
 
     static Path getUniqueFileName(Path directory, String baseName, String ext) {

@@ -2,12 +2,12 @@ package eu.ha3.presencefootsteps.world;
 
 import com.google.common.collect.Lists;
 import eu.ha3.presencefootsteps.PresenceFootsteps;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.Property;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,10 +99,10 @@ public class StateLookup implements Lookup<BlockState> {
 
             private Bucket getTile(BlockState state) {
                 return blocks.computeIfAbsent(Registry.BLOCK.getKey(state.getBlock()), id -> {
-                    Block block = Registry.BLOCK.getOrDefault(id);
+                    Block block = Registry.BLOCK.get(id);
 
                     for (ResourceLocation tag : tags.keySet()) {
-                        if (BlockTags.getCollection().getTagByID(tag).contains(block)) {
+                        if (BlockTags.getAllTags().getTagOrEmpty(tag).contains(block)) {
                             return tags.get(tag);
                         }
                     }

@@ -1,9 +1,9 @@
 package eu.ha3.presencefootsteps.world;
 
 import eu.ha3.presencefootsteps.sound.State;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Solves in-world locations and players into associations. Associations are an
@@ -44,7 +44,7 @@ public interface Solver {
      * Find an association for a certain block assuming the player is standing on
      * it, using a custom strategy which strategies are defined by the solver.
      */
-    Association findAssociation(World w, BlockPos pos, String strategy);
+    Association findAssociation(Level w, BlockPos pos, String strategy);
 
     /**
      * Play special sounds that must stop the usual footstep figuring things out

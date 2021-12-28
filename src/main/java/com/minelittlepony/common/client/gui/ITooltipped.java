@@ -1,7 +1,7 @@
 package com.minelittlepony.common.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.screen.Screen;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screens.Screen;
 
 /**
  * Interface element that renders a tooltip when hovered.
@@ -14,5 +14,5 @@ public interface ITooltipped<T extends ITooltipped<T>> {
     /**
      * Draws this element's tooltip.
      */
-    void renderToolTip(MatrixStack matrices, Screen parent, int mouseX, int mouseY);
+    void renderToolTip(PoseStack matrices, Screen parent, int mouseX, int mouseY);
 }

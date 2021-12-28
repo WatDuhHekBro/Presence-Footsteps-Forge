@@ -5,8 +5,8 @@ import eu.ha3.presencefootsteps.PFConfig;
 import eu.ha3.presencefootsteps.PFDebugHud;
 import eu.ha3.presencefootsteps.PresenceFootsteps;
 import eu.ha3.presencefootsteps.sound.SoundEngine;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.KeyMapping;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -32,7 +32,7 @@ public final class ModEventSubscriber {
         PresenceFootsteps.getInstance().setConfig(new PFConfig(pfFolder.resolve("userconfig.json"), PresenceFootsteps.getInstance()));
         PresenceFootsteps.getInstance().getConfig().load();
 
-        PresenceFootsteps.keyBinding = new KeyBinding("presencefootsteps.settings.key", InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_F10, "key.categories.misc");
+        PresenceFootsteps.keyBinding = new KeyMapping("presencefootsteps.settings.key", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F10, "key.categories.misc");
 
         PresenceFootsteps.engine = new SoundEngine(PresenceFootsteps.getInstance().getConfig());
 

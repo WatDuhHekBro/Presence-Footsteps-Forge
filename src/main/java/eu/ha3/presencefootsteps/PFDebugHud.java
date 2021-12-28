@@ -2,10 +2,10 @@ package eu.ha3.presencefootsteps;
 
 import eu.ha3.presencefootsteps.sound.SoundEngine;
 import eu.ha3.presencefootsteps.world.Emitter;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import java.util.List;
 import java.util.Map;
@@ -18,22 +18,22 @@ public class PFDebugHud {
         this.engine = engine;
     }
 
-    public void render(RayTraceResult blockHit, RayTraceResult fluidHit, List<String> list) {
+    public void render(HitResult blockHit, HitResult fluidHit, List<String> list) {
         Minecraft client = Minecraft.getInstance();
 
-        if (blockHit.getType() == RayTraceResult.Type.BLOCK) {
-            BlockState state = client.world.getBlockState(((BlockRayTraceResult)blockHit).getPos());
+        if (blockHit.getType() == HitResult.Type.BLOCK) {
+            BlockState state = client.level.getBlockState(((BlockHitResult)blockHit).getBlockPos());
 
             renderSoundList("PF Sounds",
                     engine.getIsolator().getBlockMap().getAssociations(state),
                     list);
         }
 
-        if (client.pointedEntity != null) {
+        if (client.crosshairPickEntity != null) {
             renderSoundList("PF Golem Sounds",
-                    engine.getIsolator().getGolemMap().getAssociations(client.pointedEntity.getType()),
+                    engine.getIsolator().getGolemMap().getAssociations(client.crosshairPickEntity.getType()),
                     list);
-            list.add(engine.getIsolator().getLocomotionMap().lookup(client.pointedEntity).getDisplayName());
+            list.add(engine.getIsolator().getLocomotionMap().lookup(client.crosshairPickEntity).getDisplayName());
         }
     }
 

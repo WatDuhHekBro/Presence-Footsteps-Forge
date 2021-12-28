@@ -7,10 +7,10 @@ import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.element.Slider;
 import eu.ha3.presencefootsteps.sound.generator.Locomotion;
 import eu.ha3.presencefootsteps.util.BlockReport;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nullable;
 
@@ -19,7 +19,7 @@ public class PFOptionsScreen extends GameGui {
     //private Label ponifiedLabel;
 
     public PFOptionsScreen(@Nullable Screen parent) {
-        super(new TranslationTextComponent("menu.pf.title"), parent);
+        super(new TranslatableComponent("menu.pf.title"), parent);
     }
 
     @Override
@@ -55,13 +55,13 @@ public class PFOptionsScreen extends GameGui {
 
         addButton(new Button(left, row += 24, 96, 20).onClick(sender -> {
             new BlockReport("report_concise").execute(state -> !PresenceFootsteps.getInstance().getEngine().getIsolator().getBlockMap().contains(state));
-        })).setEnabled(minecraft.world != null)
+        })).setEnabled(minecraft.level != null)
             .getStyle()
             .setText("menu.pf.report.concise");
 
         addButton(new Button(left + 104, row, 96, 20)
             .onClick(sender -> new BlockReport("report_full").execute(null)))
-            .setEnabled(minecraft.world != null)
+            .setEnabled(minecraft.level != null)
             .getStyle()
                 .setText("menu.pf.report.full");
 
@@ -71,7 +71,7 @@ public class PFOptionsScreen extends GameGui {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrices);
 
         // ponifiedLabel.getStyle().setText("Mine Little Pony: " + (MineLP.hasPonies() ? "Y" : "N"));
@@ -84,6 +84,6 @@ public class PFOptionsScreen extends GameGui {
             return "menu.pf.volume.min";
         }
 
-        return I18n.format("menu.pf.volume", (int)Math.floor(volume));
+        return I18n.get("menu.pf.volume", (int)Math.floor(volume));
     }
 }
