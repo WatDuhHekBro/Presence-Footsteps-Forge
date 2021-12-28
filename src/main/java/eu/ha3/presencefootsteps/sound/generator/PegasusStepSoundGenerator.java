@@ -99,7 +99,7 @@ class PegasusStepSoundGenerator extends QuadrapedalStepSoundGenerator {
             }
         }
 
-        if (isAirborne && isJumping(ply)) {
+        if (isAirborne) {
             simulateJumping(ply);
         } else if (!isAirborne && hugeLanding) {
             simulateLanding(ply);

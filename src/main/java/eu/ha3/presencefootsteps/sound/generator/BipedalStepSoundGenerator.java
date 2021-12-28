@@ -1,7 +1,7 @@
 package eu.ha3.presencefootsteps.sound.generator;
 
 import eu.ha3.presencefootsteps.config.Variator;
-import eu.ha3.presencefootsteps.mixins.ILivingEntity;
+//import eu.ha3.presencefootsteps.mixins.ILivingEntity;
 import eu.ha3.presencefootsteps.sound.Isolator;
 import eu.ha3.presencefootsteps.sound.State;
 import eu.ha3.presencefootsteps.sound.acoustics.AcousticLibrary;
@@ -264,9 +264,9 @@ class BipedalStepSoundGenerator implements StepSoundGenerator {
         }
     }
 
-    protected boolean isJumping(LivingEntity ply) {
+    /*protected boolean isJumping(LivingEntity ply) {
         return ((ILivingEntity) ply).isJumping();
-    }
+    }*/
 
     protected double getOffsetMinus(LivingEntity ply) {
         if (ply instanceof RemotePlayer) {
@@ -280,9 +280,9 @@ class BipedalStepSoundGenerator implements StepSoundGenerator {
             return;
         }
 
-        if (isAirborne && isJumping(ply)) {
+        if (isAirborne) {
             simulateJumping(ply);
-        } else if (!isAirborne) {
+        } else {
             simulateLanding(ply);
         }
     }
