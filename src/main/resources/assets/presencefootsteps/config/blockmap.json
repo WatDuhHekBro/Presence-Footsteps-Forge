@@ -388,7 +388,7 @@
 
 	"minecraft:slime_block": "mud,slime",
 	"minecraft:honey_block": "honey",
-	"minecraft:grass_path": "grass",
+	"minecraft:dirt_path": "grass",
 
 	"minecraft:sunflower": "NOT_EMITTER",
 	"minecraft:sunflower.messy": "MESSY_GROUND",
@@ -778,8 +778,8 @@
 	"minecraft:stonecutter": "stone",
 	"minecraft:bell": "metalbar",
 
-	"minecraft:lantern": "UNASSIGNED",
-	"minecraft:soul_fire_lantern": "UNASSIGNED",
+	"minecraft:lantern": "stoneutility",
+	"minecraft:soul_lantern": "stoneutility",
 	"minecraft:campfire[lit=false]": "wood",
 	"minecraft:campfire": "wood,magma",
 	"minecraft:soul_campfire[lit=false]": "wood",
@@ -848,5 +848,35 @@
 	
 	"minecraft:stripped_crimson_stem": "organic_dry,mushroom,stone",
 	"minecraft:stripped_crimson_hyphae": "organic_dry,mushroom,stone",
-	"#minecraft:crimson_stems": "organic_dry,wood_sticky,mushroom"
+	"#minecraft:crimson_stems": "organic_dry,wood_sticky,mushroom",
+
+	"minecraft:amethyst_block": "hardmetal",
+	"minecraft:amethyst_cluster": "hollowmetal",
+	"minecraft:azalea": "leaves",
+	"minecraft:azalea_leaves": "leaves",
+	"minecraft:big_dripleaf": "leaves",
+	"minecraft:cake.add_candle": "NOT_EMITTER",
+	"minecraft:calcite": "marble",
+	"minecraft:candle": "NOT_EMITTER",
+	"minecraft:cave_vines": "leaves",
+	"minecraft:copper": "hardmetal",
+	"minecraft:deepslate_bricks": "stone,marble",
+	"minecraft:deepslate": "stone",
+	"minecraft:deepslate_tiles": "stone,marble",
+	"minecraft:dripstone_block": "stone",
+	"minecraft:pointed_dripstone": "stone",
+	"minecraft:flowering_azalea": "leaves",
+	"minecraft:hanging_roots": "leaves",
+	"minecraft:large_amethyst_bud": "hollowmetal",
+	"minecraft:medium_amethyst_bud": "hollowmetal",
+	"minecraft:moss_carpet": "leaves",
+	"minecraft:moss": "leaves",
+	"minecraft:polished_deepslate": "stone,marble",
+	"minecraft:powder_snow": "snow",
+	"minecraft:rooted_dirt": "dirt,straw",
+	"minecraft:sculk_sensor": "hardmetal,hollowmetal",
+	"minecraft:small_amethyst_bud": "hollowmetal",
+	"minecraft:small_dripleaf": "leaves",
+	"minecraft:spore_blossom": "leaves",
+	"minecraft:tuff": "stone,marble"
 }

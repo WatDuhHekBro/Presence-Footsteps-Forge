@@ -2,7 +2,7 @@ package eu.ha3.presencefootsteps.sound;
 
 import eu.ha3.presencefootsteps.PFConfig;
 import eu.ha3.presencefootsteps.PresenceFootsteps;
-import eu.ha3.presencefootsteps.mixins.IEntity;
+//import eu.ha3.presencefootsteps.mixins.IEntity;
 import eu.ha3.presencefootsteps.sound.acoustics.AcousticsJsonParser;
 import eu.ha3.presencefootsteps.sound.generator.Locomotion;
 import eu.ha3.presencefootsteps.sound.generator.StepSoundGenerator;
@@ -89,9 +89,10 @@ public class SoundEngine implements PreparableReloadListener {
             getTargets(player).forEach(e -> {
                 StepSoundGenerator generator = ((StepSoundSource) e).getStepGenerator(this);
                 generator.setIsolator(isolator);
-                if (generator.generateFootsteps((LivingEntity)e)) {
+                /*if (generator.generateFootsteps((LivingEntity)e)) {
                     ((IEntity) e).setNextStepDistance(Integer.MAX_VALUE);
-                }
+                }*/
+                generator.generateFootsteps((LivingEntity)e);
             });
 
             isolator.think(); // Delayed sounds
@@ -170,8 +171,8 @@ public class SoundEngine implements PreparableReloadListener {
 
         Player player = Minecraft.getInstance().player;
 
-        if (player != null) {
+        /*if (player != null) {
             ((IEntity) player).setNextStepDistance(0);
-        }
+        }*/
     }
 }

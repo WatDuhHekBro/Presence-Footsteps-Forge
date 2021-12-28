@@ -20,7 +20,7 @@ public interface IViewRoot extends IBounded {
      * Gets all the bounds of elements found inside this view. Includes sub-views and their contents.
      */
     default Set<Bounds> getAllBounds() {
-        Set<Bounds> bounds = new HashSet();
+        Set<Bounds> bounds = new HashSet<>();
         this.getChildElements().forEach((element) -> {
             if (element instanceof IViewRoot) {
                 bounds.addAll(((IViewRoot)element).getAllBounds());

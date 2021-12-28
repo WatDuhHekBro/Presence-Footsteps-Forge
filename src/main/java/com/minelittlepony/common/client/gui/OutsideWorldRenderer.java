@@ -26,6 +26,7 @@ public class OutsideWorldRenderer {
      *
      * @return a pre-configured TileEntityRendererDispatcher
      */
+    /*
     public static BlockEntityRenderDispatcher configure(@Nullable Level world) {
         BlockEntityRenderDispatcher dispatcher = BlockEntityRenderDispatcher.instance;
         Minecraft mc = Minecraft.getInstance();
@@ -33,8 +34,6 @@ public class OutsideWorldRenderer {
         world = ObjectUtils.firstNonNull(dispatcher.level, world, mc.level);
 
         dispatcher.prepare(world,
-                mc.getTextureManager(),
-                mc.getEntityRenderDispatcher().getFont(),
                 mc.gameRenderer.getMainCamera(),
                 mc.hitResult);
 
@@ -44,6 +43,7 @@ public class OutsideWorldRenderer {
 
         return dispatcher;
     }
+    */
 
     /**
      * Renders a ItemStack to the screen.
@@ -53,7 +53,7 @@ public class OutsideWorldRenderer {
      * @param y The top-Y position (in pixels)
      */
     public static void renderStack(ItemStack stack, int x, int y) {
-        configure(null);
+        //configure(null);
         Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, x, y);
     }
 }

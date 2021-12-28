@@ -11,11 +11,6 @@ import com.minelittlepony.common.client.gui.IField;
 
 import java.util.function.Function;
 
-import static net.minecraft.client.gui.widget.Widget.WIDGETS_LOCATION;
-
-import com.minelittlepony.common.client.gui.IField.IChangeCallback;
-import com.net.minecraft.client.gui.components.AbstractWidgetd.IChangeCallback;
-
 /**
  * Base class for a slider element.
  *
@@ -132,9 +127,9 @@ public abstract class AbstractSlider<T> extends Button implements IField<T, Abst
 
     @Override
     protected void renderBg(PoseStack matrices, Minecraft mc, int mouseX, int mouseY) {
-        mc.getTextureManager().bind(WIDGETS_LOCATION);
+        mc.getTextureManager().bindForSetup(WIDGETS_LOCATION);
 
-        int i = 46 + (isHovered() ? 2 : 1) * 20;
+        int i = 46 + (isHovered ? 2 : 1) * 20;
         int sliderX = x + (int)(value * (width - 8));
 
         blit(matrices, sliderX,     y, 0,   i, 4, 20);

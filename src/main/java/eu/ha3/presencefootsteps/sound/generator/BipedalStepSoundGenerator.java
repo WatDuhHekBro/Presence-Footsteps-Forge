@@ -125,9 +125,9 @@ class BipedalStepSoundGenerator implements StepSoundGenerator {
             if (ply.level.getGameTime() % 1 == 0) {
 
                 if (motionX != 0 || motionZ != 0) {
-                    ply.moveDist += Mth.sqrt(Math.pow(motionX, 2) + Math.pow(motionY, 2) + Math.pow(motionZ, 2)) * 0.8;
+                    ply.moveDist += Mth.sqrt((float) (Math.pow(motionX, 2) + Math.pow(motionY, 2) + Math.pow(motionZ, 2))) * 0.8;
                 } else {
-                    ply.moveDist += Mth.sqrt(Math.pow(motionX, 2) + Math.pow(motionZ, 2)) * 0.8;
+                    ply.moveDist += Mth.sqrt((float) (Math.pow(motionX, 2) + Math.pow(motionZ, 2))) * 0.8;
                 }
 
                 if (ply.isOnGround()) {

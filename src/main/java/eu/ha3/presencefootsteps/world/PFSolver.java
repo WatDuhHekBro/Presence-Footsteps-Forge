@@ -53,7 +53,7 @@ public class PFSolver implements Solver {
     @Override
     public Association findAssociation(Entity ply, double verticalOffsetAsMinus, boolean isRightFoot) {
 
-        double rot = Math.toRadians(Mth.wrapDegrees(ply.yRot));
+        double rot = Math.toRadians(Mth.wrapDegrees(ply.getYRot()));
 
         Vec3 pos = ply.position();
 

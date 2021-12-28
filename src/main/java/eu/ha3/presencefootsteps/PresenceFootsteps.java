@@ -1,11 +1,7 @@
 package eu.ha3.presencefootsteps;
 
 import eu.ha3.presencefootsteps.sound.SoundEngine;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.toasts.SystemToast;
-import net.minecraft.client.gui.toasts.ToastGui;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;

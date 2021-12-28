@@ -15,14 +15,12 @@ import java.util.List;
 @Mixin(DebugScreenOverlay.class)
 public abstract class MDebugHud extends GuiComponent {
 
-    @Shadow
-    protected HitResult rayTraceBlock;
+    protected HitResult block;
 
-    @Shadow
-    protected HitResult rayTraceFluid;
+    protected HitResult fluid;
 
     @Inject(method = "getDebugInfoRight", at = @At("RETURN"))
     protected void onGetRightText(CallbackInfoReturnable<List<String>> info) {
-        PresenceFootsteps.getInstance().getDebugHud().render(rayTraceBlock, rayTraceFluid, info.getReturnValue());
+        PresenceFootsteps.getInstance().getDebugHud().render(block, fluid, info.getReturnValue());
     }
 }

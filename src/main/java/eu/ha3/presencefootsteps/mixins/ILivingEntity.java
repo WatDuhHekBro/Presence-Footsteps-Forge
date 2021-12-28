@@ -6,6 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LivingEntity.class)
 public interface ILivingEntity {
-    @Accessor("isJumping")
+    @Accessor("jumping")
     boolean isJumping();
 }

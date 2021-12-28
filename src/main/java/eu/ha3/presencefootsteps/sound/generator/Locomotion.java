@@ -1,6 +1,5 @@
 package eu.ha3.presencefootsteps.sound.generator;
 
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;

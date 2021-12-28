@@ -4,7 +4,6 @@ import com.google.gson.stream.JsonWriter;
 import com.minelittlepony.common.util.GamePaths;
 import eu.ha3.presencefootsteps.PresenceFootsteps;
 import eu.ha3.presencefootsteps.world.Lookup;
-import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.network.chat.Component;

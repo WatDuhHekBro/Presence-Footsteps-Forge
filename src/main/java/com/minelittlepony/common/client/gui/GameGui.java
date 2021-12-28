@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
@@ -96,8 +97,8 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
     /**
      * The list of buttons present on this screen.
      */
-    public List<AbstractWidget> buttons() {
-        return buttons;
+    public List<Widget> buttons() {
+        return renderables;
     }
 
     /**
@@ -105,7 +106,7 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      */
     @Override
     public List<GuiEventListener> children() {
-        return children;
+        return children();
     }
 
     /**
@@ -113,24 +114,25 @@ public abstract class GameGui extends Screen implements IViewRoot, ITextContext 
      * <p>
      * Made public to help with mod development.
      */
-    @Override
     public <T extends AbstractWidget> T addButton(T button) {
-        return super.addButton(button);
+        return super.addRenderableWidget(button);
     }
 
+    /*
     @Override
     public void init(Minecraft mc, int width, int height) {
         bounds.width = width;
         bounds.height = height;
         super.init(mc, width, height);
     }
+    */
 
     @Override
     public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
 
-        buttons.forEach(button -> {
-            if (button instanceof ITooltipped && button.isMouseOver(mouseX, mouseY)) {
+        renderables.forEach(button -> {
+            if (button instanceof ITooltipped /*&& button.isMouseOver(mouseX, mouseY)*/) {
                 ((ITooltipped<?>)button).renderToolTip(matrices, this, mouseX, mouseY);
             }
         });

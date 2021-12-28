@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.util.Mth;
 import com.minelittlepony.common.client.gui.ITextContext;
 import com.minelittlepony.common.client.gui.ITooltipped;
@@ -115,9 +116,9 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
 
-        mc.getTextureManager().bind(WIDGETS_LOCATION);
+        mc.getTextureManager().bindForSetup(WIDGETS_LOCATION);
 
-        RenderSystem.color4f(1, 1, 1, alpha);
+        RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(
                 GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
@@ -126,7 +127,7 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
                 GlStateManager.SourceFactor.SRC_ALPHA,
                 GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-        int state = 46 + getYImage(isHovered()) * 20;
+        int state = 46 + getYImage(isHovered) * 20;
 
         renderButtonBlit(matrices, x, y, state, width, height);
 
@@ -135,7 +136,7 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
         int foreColor = getStyle().getColor();
         if (!active) {
             foreColor = 10526880;
-        } else if (isHovered()) {
+        } else if (isHovered) {
             foreColor = 16777120;
         }
 
@@ -179,4 +180,7 @@ public class Button extends AbstractButton implements ITooltipped<Button>, IBoun
                 endV, endU,
                 blockWidth/2, blockHeight/2);
     }
+    
+    @Override
+    public void updateNarration(NarrationElementOutput asdf) {}
 }

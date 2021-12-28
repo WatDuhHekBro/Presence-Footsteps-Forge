@@ -76,7 +76,7 @@ public class ToolTipRenderer extends GuiComponent {
         Font font = Minecraft.getInstance().font;
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
-        RenderSystem.disableRescaleNormal();
+        //RenderSystem.disableRescaleNormal();
         RenderSystem.disableDepthTest();
 
         int labelWidth = 0;
@@ -144,6 +144,6 @@ public class ToolTipRenderer extends GuiComponent {
         setBlitOffset(0);
         itemRenderer.blitOffset = 0;
         RenderSystem.enableDepthTest();
-        RenderSystem.enableRescaleNormal();
+        //RenderSystem.enableRescaleNormal();
     }
 }
